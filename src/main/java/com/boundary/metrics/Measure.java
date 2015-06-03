@@ -1,6 +1,5 @@
 package com.boundary.metrics;
 
-
 public class Measure {
     private final String name;
     private final double value;

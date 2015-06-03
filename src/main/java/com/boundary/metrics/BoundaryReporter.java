@@ -15,15 +15,19 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Function;
+import com.google.common.net.HostAndPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Background reporter that sends metrics to a Boundary Meter
@@ -123,6 +127,16 @@ public class BoundaryReporter extends ScheduledReporter{
         }
     }
 
+    @Override
+    public void close() {
+        super.close();
+        try {
+            client.close();
+        } catch (IOException e) {
+            LOGGER.error("Error closing boundary client", e);
+        }
+    }
+
     public static Builder reporter() {
         return new Builder();
     }
@@ -134,8 +148,9 @@ public class BoundaryReporter extends ScheduledReporter{
         private MetricFilter filter = MetricFilter.ALL;
         private TimeUnit rateUnit = TimeUnit.SECONDS;
         private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
+        private HostAndPort hostAndPort = HostAndPort.fromParts("localhost", 9192);
 
-        private BoundaryClient client = BoundaryRpcClient.newInstance();
+        private BoundaryClient client;
         private String prefix;
         private Set<MetricExtension> extensions = MetricExtension.ALL;
 
@@ -176,6 +191,19 @@ public class BoundaryReporter extends ScheduledReporter{
         }
 
         public BoundaryReporter build() {
+
+            checkNotNull(registry);
+            checkNotNull(filter);
+            checkNotNull(rateUnit);
+            checkNotNull(durationUnit);
+            checkNotNull(hostAndPort);
+            checkNotNull(prefix);
+            checkNotNull(extensions);
+
+            if (client == null) {
+                client = BoundaryRpcClient.newInstance(hostAndPort);
+            }
+
             return new BoundaryReporter(this);
         }
 

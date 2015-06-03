@@ -2,7 +2,9 @@ package com.boundary.metrics.rpc;
 
 import com.boundary.metrics.Measure;
 
-public interface BoundaryClient {
+import java.io.Closeable;
+
+public interface BoundaryClient extends Closeable {
 
     public void addMeasures(Iterable<Measure> metrics);
 }
