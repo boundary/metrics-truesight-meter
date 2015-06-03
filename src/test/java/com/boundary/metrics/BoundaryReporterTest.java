@@ -1,6 +1,5 @@
 package com.boundary.metrics;
 
-import com.boundary.metrics.rpc.BoundaryClient;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -13,10 +12,9 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Test;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -29,12 +27,12 @@ import static org.junit.Assert.assertTrue;
 
 public class BoundaryReporterTest {
 
-    private CapturingClient client = new CapturingClient();
+    private TestCapturingClient client = new TestCapturingClient();
     private MetricRegistry registry = new MetricRegistry();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Test
-    public void testFilterMetrics() throws InterruptedException {
+    public void testFilterMetrics() throws InterruptedException, IOException {
 
 
         final Counter c = registry.counter(name(getClass().getSimpleName(), "test-counter"));
@@ -105,21 +103,10 @@ public class BoundaryReporterTest {
             for(Measure measure: measures) {
                 assertTrue(measure.getName().startsWith(prefix));
             }
-
-
         }
+
+        reporter.close();
+        assertThat(client.isClosed(), is(true));
     }
 
-    private class CapturingClient implements BoundaryClient {
-        CopyOnWriteArrayList<Iterable<Measure>> captured = new CopyOnWriteArrayList<>();
-
-        @Override
-        public void addMeasures(Iterable<Measure> metrics) {
-            captured.add(metrics);
-        }
-
-        public List<Iterable<Measure>> getCaptured () {
-            return captured;
-        }
-    }
 }

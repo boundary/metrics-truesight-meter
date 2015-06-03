@@ -190,7 +190,7 @@ public class BoundaryReporter extends ScheduledReporter{
             return this;
         }
 
-        public BoundaryReporter build() {
+        public BoundaryReporter build() throws IOException {
 
             checkNotNull(registry);
             checkNotNull(filter);
@@ -201,7 +201,9 @@ public class BoundaryReporter extends ScheduledReporter{
             checkNotNull(extensions);
 
             if (client == null) {
-                client = BoundaryRpcClient.newInstance(hostAndPort);
+                BoundaryRpcClient c = BoundaryRpcClient.newInstance(hostAndPort);
+                c.start();
+                this.client = c;
             }
 
             return new BoundaryReporter(this);

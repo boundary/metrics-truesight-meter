@@ -1,5 +1,6 @@
 package com.boundary.metrics;
 
+import com.boundary.metrics.rpc.BoundaryClient;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -7,19 +8,18 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
-/**
- * Created by jesse on 4/6/15.
- */
 public class BoundaryIntegrationTest {
 
     @Test
-    public void testMetrics() throws InterruptedException {
+    public void testMetrics() throws InterruptedException, IOException {
 
         MetricRegistry registry = new MetricRegistry();
 
@@ -37,12 +37,14 @@ public class BoundaryIntegrationTest {
         };
         registry.register("test-gauge", inverseCounter);
 
+        BoundaryClient client = new TestCapturingClient();
 
         BoundaryReporter reporter = BoundaryReporter.reporter()
                 .setDurationUnit(TimeUnit.SECONDS)
                 .setRateUnit(TimeUnit.SECONDS)
                 .setPrefix("test")
                 .setRegistry(registry)
+                .setClient(client)
                 .build();
 
         reporter.start(1, TimeUnit.SECONDS);
@@ -55,7 +57,7 @@ public class BoundaryIntegrationTest {
                 m.mark();
             }
 
-            Thread.sleep(1000);
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
         }
 
 
