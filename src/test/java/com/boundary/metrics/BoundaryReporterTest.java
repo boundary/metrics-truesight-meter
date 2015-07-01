@@ -42,9 +42,9 @@ public class BoundaryReporterTest {
 
 
         Set<MetricExtension> extensions = Sets.newHashSet();
-        extensions.add(MetricExtension.CountingExtension.COUNT);
-        extensions.add(MetricExtension.SamplingExtension.MEDIAN);
-        extensions.add(MetricExtension.MeteredExtension.ONEMRATE);
+        extensions.add(MetricExtension.Counting.COUNT);
+        extensions.add(MetricExtension.Sampling.Median);
+        extensions.add(MetricExtension.Metering.OneMinuteRate);
 
 
         Gauge<Double> inverseCounter = new RatioGauge() {
@@ -56,7 +56,7 @@ public class BoundaryReporterTest {
         registry.register("test-gauge", inverseCounter);
 
         String prefix = "test";
-        BoundaryReporter reporter = BoundaryReporter.reporter()
+        BoundaryReporter reporter = BoundaryReporter.builder()
                 .setDurationUnit(TimeUnit.SECONDS)
                 .setRateUnit(TimeUnit.SECONDS)
                 .setClient(client)
@@ -85,12 +85,7 @@ public class BoundaryReporterTest {
         });
 
 
-        await().atMost(15, TimeUnit.SECONDS).until(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return client.getCaptured().size();
-            }
-        }, is(10));
+        await().atMost(15, TimeUnit.SECONDS).until(() -> client.getCaptured().size(), is(10));
 
 
         for(Iterable<Measure> measures : client.getCaptured()) {

@@ -1,9 +1,9 @@
 package com.boundary.metrics;
 
 
-import com.boundary.metrics.converter.CountingExtensionFilter;
-import com.boundary.metrics.converter.MeteredExtensionFilter;
-import com.boundary.metrics.converter.SamplingExtensionFilter;
+import com.boundary.metrics.filter.CountingExtFilter;
+import com.boundary.metrics.filter.MeteredExtFilter;
+import com.boundary.metrics.filter.SamplingExtFilter;
 import com.boundary.metrics.rpc.BoundaryClient;
 import com.boundary.metrics.rpc.BoundaryRpcClient;
 import com.codahale.metrics.Counter;
@@ -14,7 +14,7 @@ import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Timer;
-import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.net.HostAndPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,40 +36,27 @@ public class BoundaryReporter extends ScheduledReporter{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BoundaryReporter.class);
 
-    private final SamplingExtensionFilter sampling;
-    private final CountingExtensionFilter counting;
-    private final MeteredExtensionFilter metered;
+    private final SamplingExtFilter sampling;
+    private final CountingExtFilter counting;
+    private final MeteredExtFilter metered;
     private final BoundaryClient client;
+    private final NameFactory nameFactory;
+
 
     protected BoundaryReporter(Builder builder) {
         super(builder.registry, "boundary-reporter", builder.filter, builder.rateUnit, builder.durationUnit);
 
-        this.sampling = new SamplingExtensionFilter(builder.extensions, builder.prefix);
-        this.counting = new CountingExtensionFilter(builder.extensions, builder.prefix);
-        this.metered = new MeteredExtensionFilter(builder.extensions, builder.prefix);
+        this.nameFactory = new NameFactory(builder.prefix, builder.masks);
+
+        this.sampling = new SamplingExtFilter(builder.extensions, nameFactory);
+        this.counting = new CountingExtFilter(builder.extensions, nameFactory);
+        this.metered = new MeteredExtFilter(builder.extensions, nameFactory);
         this.client = builder.client;
     }
 
-    private Function<Double, Double> convertRate = new Function<Double, Double>() {
-        @Override
-        public Double apply(Double input) {
-            return convertRate(input);
-        }
-    };
-
-    private Function<Double, Double> convertDuration = new Function<Double, Double>() {
-        @Override
-        public Double apply(Double input) {
-            return convertDuration(input);
-        }
-    };
-
-    private Function<Double, Double> noConversion = new Function<Double, Double>() {
-        @Override
-        public Double apply(Double input) {
-            return input;
-        }
-    };
+    private Fn.RateConverter convertRate = this::convertRate;
+    private Fn.RateConverter convertDuration = this::convertDuration;
+    private Fn.RateConverter noConversion = input -> input;
 
     @Override
     public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters, SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
@@ -115,7 +102,7 @@ public class BoundaryReporter extends ScheduledReporter{
             if (val instanceof Number) {
                 Double vn = ((Number) val).doubleValue();
                 if (!(Double.isInfinite(vn) || Double.isNaN(vn))) {
-                    measures.add(new Measure(entry.getKey(), vn));
+                    measures.add(new Measure(nameFactory.name(entry.getKey()), vn));
                 }
             }
         }
@@ -137,7 +124,7 @@ public class BoundaryReporter extends ScheduledReporter{
         }
     }
 
-    public static Builder reporter() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -148,12 +135,18 @@ public class BoundaryReporter extends ScheduledReporter{
         private MetricFilter filter = MetricFilter.ALL;
         private TimeUnit rateUnit = TimeUnit.SECONDS;
         private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
-        private HostAndPort hostAndPort = HostAndPort.fromParts("localhost", 9192);
+        private HostAndPort meter = HostAndPort.fromParts("localhost", 9192);
 
         private BoundaryClient client;
-        private String prefix;
+        private String prefix = "";
         private Set<MetricExtension> extensions = MetricExtension.ALL;
+        private List<String> masks = ImmutableList.of();
 
+
+        public Builder setMeter(HostAndPort meter) {
+            this.meter = meter;
+            return this;
+        }
 
         public Builder setRegistry(MetricRegistry registry) {
             this.registry = registry;
@@ -185,24 +178,33 @@ public class BoundaryReporter extends ScheduledReporter{
             return this;
         }
 
+        public Builder setMasks(List<String> masks) {
+            this.masks = masks;
+            return this;
+        }
+
         public Builder setClient(BoundaryClient client) {
             this.client = client;
             return this;
         }
 
-        public BoundaryReporter build() throws IOException {
+        public BoundaryReporter build() {
 
             checkNotNull(registry);
             checkNotNull(filter);
             checkNotNull(rateUnit);
             checkNotNull(durationUnit);
-            checkNotNull(hostAndPort);
+            checkNotNull(meter);
             checkNotNull(prefix);
             checkNotNull(extensions);
 
             if (client == null) {
-                BoundaryRpcClient c = BoundaryRpcClient.newInstance(hostAndPort);
-                c.start();
+                BoundaryRpcClient c = BoundaryRpcClient.newInstance(meter);
+                try {
+                    c.start();
+                } catch (IOException e) {
+                    LOGGER.error("Unable to connect to boundary meter at " + meter.toString(), e);
+                }
                 this.client = c;
             }
 

@@ -1,6 +1,5 @@
 package com.boundary.metrics;
 
-import com.boundary.metrics.rpc.BoundaryClient;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -8,10 +7,13 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -19,15 +21,16 @@ import static com.codahale.metrics.MetricRegistry.name;
 public class BoundaryIntegrationTest {
 
     @Test
+    @Ignore
     public void testMetrics() throws InterruptedException, IOException {
 
         MetricRegistry registry = new MetricRegistry();
 
-        final Counter c = registry.counter(name(getClass().getSimpleName(), "test-counter"));
-        final Histogram h = registry.histogram(name(getClass().getSimpleName(), "test-histogram"));
-        final Timer t = registry.timer("test-timer");
+        final Counter c = registry.counter(name(getClass().getSimpleName(), "a-counter"));
+        final Histogram h = registry.histogram(name(getClass().getSimpleName(), "a-histogram"));
+        final Timer t = registry.timer("timer");
 
-        final Meter m = registry.meter("test-meter");
+        final Meter m = registry.meter("meter");
 
         Gauge<Double> inverseCounter = new RatioGauge() {
             @Override
@@ -35,22 +38,25 @@ public class BoundaryIntegrationTest {
                 return Ratio.of(1.0, c.getCount());
             }
         };
-        registry.register("test-gauge", inverseCounter);
+        registry.register("test_gauge", inverseCounter);
 
-        BoundaryClient client = new TestCapturingClient();
+        Set<MetricExtension> extensions = ImmutableSet.of(
+                MetricExtension.Counting.COUNT
+                , MetricExtension.Metering.OneMinuteRate
+        );
 
-        BoundaryReporter reporter = BoundaryReporter.reporter()
+        BoundaryReporter reporter = BoundaryReporter.builder()
                 .setDurationUnit(TimeUnit.SECONDS)
                 .setRateUnit(TimeUnit.SECONDS)
                 .setPrefix("test")
+                .setExtensions(extensions)
                 .setRegistry(registry)
-                .setClient(client)
                 .build();
 
         reporter.start(1, TimeUnit.SECONDS);
 
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 50; i++) {
             try(Timer.Context ignored = t.time()) {
                 c.inc();
                 h.update(i);
@@ -59,9 +65,6 @@ public class BoundaryIntegrationTest {
 
             Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
         }
-
-
-
 
     }
 
