@@ -1,11 +1,13 @@
 package com.boundary.metrics;
 
 
+import com.boundary.meter.client.BoundaryMeterClient;
+import com.boundary.meter.client.model.Measure;
+import com.boundary.meter.client.rpc.BoundaryRpcClient;
+import com.boundary.meter.client.rpc.BoundaryRpcClientConfig;
 import com.boundary.metrics.filter.CountingExtFilter;
 import com.boundary.metrics.filter.MeteredExtFilter;
 import com.boundary.metrics.filter.SamplingExtFilter;
-import com.boundary.metrics.rpc.BoundaryClient;
-import com.boundary.metrics.rpc.BoundaryRpcClient;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -19,7 +21,6 @@ import com.google.common.net.HostAndPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class BoundaryReporter extends ScheduledReporter{
     private final SamplingExtFilter sampling;
     private final CountingExtFilter counting;
     private final MeteredExtFilter metered;
-    private final BoundaryClient client;
+    private final BoundaryMeterClient client;
     private final NameFactory nameFactory;
 
 
@@ -119,7 +120,7 @@ public class BoundaryReporter extends ScheduledReporter{
         super.close();
         try {
             client.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Error closing boundary client", e);
         }
     }
@@ -137,7 +138,7 @@ public class BoundaryReporter extends ScheduledReporter{
         private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
         private HostAndPort meter = HostAndPort.fromParts("localhost", 9192);
 
-        private BoundaryClient client;
+        private BoundaryMeterClient client;
         private String prefix = "";
         private Set<MetricExtension> extensions = MetricExtension.ALL;
         private List<String> masks = ImmutableList.of();
@@ -183,7 +184,7 @@ public class BoundaryReporter extends ScheduledReporter{
             return this;
         }
 
-        public Builder setClient(BoundaryClient client) {
+        public Builder setClient(BoundaryMeterClient client) {
             this.client = client;
             return this;
         }
@@ -199,13 +200,13 @@ public class BoundaryReporter extends ScheduledReporter{
             checkNotNull(extensions);
 
             if (client == null) {
-                BoundaryRpcClient c = BoundaryRpcClient.newInstance(meter);
+                BoundaryRpcClientConfig config = new BoundaryRpcClientConfig();
+                config.setMeter(meter);
                 try {
-                    c.start();
-                } catch (IOException e) {
+                    client = new BoundaryRpcClient(config);
+                } catch (Exception e) {
                     LOGGER.error("Unable to connect to boundary meter at " + meter.toString(), e);
                 }
-                this.client = c;
             }
 
             return new BoundaryReporter(this);

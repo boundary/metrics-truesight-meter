@@ -1,7 +1,7 @@
 package com.boundary.metrics.filter;
 
+import com.boundary.meter.client.model.Measure;
 import com.boundary.metrics.Fn;
-import com.boundary.metrics.Measure;
 import com.boundary.metrics.MetricExtension;
 import com.boundary.metrics.NameFactory;
 

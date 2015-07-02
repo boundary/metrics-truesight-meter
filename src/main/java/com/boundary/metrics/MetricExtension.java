@@ -40,7 +40,6 @@ public interface MetricExtension {
      */
     enum Sampling implements MetricExtension, Fn.GetValue<Snapshot> {
 
-        /* I wish this was java8 */
         Mean("Mean", Snapshot::getMean),
         Median("Median", Snapshot::getMedian),
         P75("75th", Snapshot::get75thPercentile),

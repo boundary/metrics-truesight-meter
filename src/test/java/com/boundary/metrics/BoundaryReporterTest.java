@@ -1,5 +1,6 @@
 package com.boundary.metrics;
 
+import com.boundary.meter.client.model.Measure;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -14,7 +15,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

@@ -1,7 +1,7 @@
 package com.boundary.metrics.filter;
 
+import com.boundary.meter.client.model.Measure;
 import com.boundary.metrics.Fn;
-import com.boundary.metrics.Measure;
 import com.boundary.metrics.MetricExtension;
 import com.boundary.metrics.NameFactory;
 import com.codahale.metrics.Metered;
@@ -23,11 +23,12 @@ public class MeteredExtFilter implements Fn.ExtFilter<Metered> {
 
 
         ImmutableSet.Builder<Metering> meteredExtensions = ImmutableSet.builder();
-        for (MetricExtension ext: extensions) {
-            if (ext instanceof Metering) {
-                meteredExtensions.add((Metering) ext);
-            }
-        }
+
+        extensions
+                .stream()
+                .filter(ext -> ext instanceof Metering)
+                .forEach(ext -> meteredExtensions.add((Metering) ext));
+
         this.extensions = meteredExtensions.build();
 
     }

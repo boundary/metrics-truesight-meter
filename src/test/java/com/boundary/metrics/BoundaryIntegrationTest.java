@@ -9,10 +9,7 @@ import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.junit.Ignore;
-import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -20,14 +17,13 @@ import static com.codahale.metrics.MetricRegistry.name;
 
 public class BoundaryIntegrationTest {
 
-    @Test
-    @Ignore
-    public void testMetrics() throws InterruptedException, IOException {
+
+    public static void main(String[] args) throws Exception {
 
         MetricRegistry registry = new MetricRegistry();
 
-        final Counter c = registry.counter(name(getClass().getSimpleName(), "a-counter"));
-        final Histogram h = registry.histogram(name(getClass().getSimpleName(), "a-histogram"));
+        final Counter c = registry.counter(name(BoundaryIntegrationTest.class.getSimpleName(), "a-counter"));
+        final Histogram h = registry.histogram(name(BoundaryIntegrationTest.class.getSimpleName(), "a-histogram"));
         final Timer t = registry.timer("timer");
 
         final Meter m = registry.meter("meter");
@@ -55,8 +51,7 @@ public class BoundaryIntegrationTest {
 
         reporter.start(1, TimeUnit.SECONDS);
 
-
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
             try(Timer.Context ignored = t.time()) {
                 c.inc();
                 h.update(i);

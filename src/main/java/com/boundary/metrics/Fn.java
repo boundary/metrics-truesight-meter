@@ -1,6 +1,6 @@
 package com.boundary.metrics;
 
-import com.google.common.base.Joiner;
+import com.boundary.meter.client.model.Measure;
 
 import java.util.List;
 
