@@ -26,17 +26,15 @@ public class NameFactory {
 
     private String mask(String name) {
 
-        String masked = null;
-        for(String mask: masks) {
-            if(name.startsWith(mask)) {
-                masked = name.substring(mask.length());
-                if (masked.startsWith(DELIMITER)) {
-                    masked = masked.substring(1);
-                }
-                break;
-            }
-        }
-        return masked == null ? name: masked;
+        return masks
+                .stream()
+                .filter(name::startsWith)
+                .map(mask -> name.substring(mask.length()))
+                .map(masked ->
+                        masked.startsWith(DELIMITER) ? masked.substring(1) : masked
+                )
+                .findFirst()
+                .orElse(name);
     }
 
     public String name(String name, MetricExtension extension) {
