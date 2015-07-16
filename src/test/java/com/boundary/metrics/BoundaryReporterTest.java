@@ -64,7 +64,6 @@ public class BoundaryReporterTest {
                 .setPrefix(prefix)
                 .setRegistry(registry)
                 .build();
-
         reporter.start(1, TimeUnit.SECONDS);
 
 
@@ -96,7 +95,7 @@ public class BoundaryReporterTest {
             assertThat(Iterables.size(measures), is(9));
 
             for(Measure measure: measures) {
-                assertTrue(measure.getName().startsWith(prefix));
+                assertTrue(measure.name().startsWith(prefix));
             }
         }
 

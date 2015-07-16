@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.1.0</metrics.version>
-        <meter.client.version>0.1</meter.client.version>
+        <meter.client.version>0.2</meter.client.version>
     </properties>
 
     <dependencies>

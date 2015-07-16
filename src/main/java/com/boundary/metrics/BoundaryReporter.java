@@ -103,7 +103,7 @@ public class BoundaryReporter extends ScheduledReporter{
             if (val instanceof Number) {
                 Double vn = ((Number) val).doubleValue();
                 if (!(Double.isInfinite(vn) || Double.isNaN(vn))) {
-                    measures.add(new Measure(nameFactory.name(entry.getKey()), vn));
+                    measures.add(Measure.of(nameFactory.name(entry.getKey()), vn));
                 }
             }
         }
@@ -202,11 +202,14 @@ public class BoundaryReporter extends ScheduledReporter{
             if (client == null) {
                 BoundaryRpcClientConfig config = new BoundaryRpcClientConfig();
                 config.setMeter(meter);
+                BoundaryRpcClient _client = null;
                 try {
-                    client = new BoundaryRpcClient(config);
+                    _client = new BoundaryRpcClient(config);
+                    _client.connect();
                 } catch (Exception e) {
                     LOGGER.error("Unable to connect to boundary meter at " + meter.toString(), e);
                 }
+                client = _client;
             }
 
             return new BoundaryReporter(this);

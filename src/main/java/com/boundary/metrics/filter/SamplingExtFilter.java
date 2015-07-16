@@ -41,7 +41,7 @@ public class SamplingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Samp
         final Snapshot sn = toConvert.getSnapshot();
 
         extensions.forEach(ext -> {
-            list.add(new Measure(nameFactory.name(name, ext), converter.convert(ext.getValue(sn))));
+            list.add(Measure.of(nameFactory.name(name, ext), converter.convert(ext.getValue(sn))));
         });
 
     }

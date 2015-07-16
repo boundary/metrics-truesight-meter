@@ -28,7 +28,7 @@ public class CountingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Coun
     public void filter(String name, com.codahale.metrics.Counting counting, Fn.RateConverter ignored, List<Measure> list) {
 
         if (includeCount) {
-            list.add(new Measure(nameFactory.name(name, MetricExtension.Counting.COUNT), counting.getCount()));
+            list.add(Measure.of(nameFactory.name(name, MetricExtension.Counting.COUNT), counting.getCount()));
         }
     }
 }
