@@ -4,7 +4,7 @@
 
     <groupId>com.boundary</groupId>
     <artifactId>metrics-boundary</artifactId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.1.2</metrics.version>
@@ -163,7 +163,7 @@
     </distributionManagement>
     <scm>
         <connection>scm:git:ssh://git@github.bmc.com/ts-saas/metrics-boundary.git</connection>
-        <tag>metrics-boundary-0.7</tag>
+        <tag>HEAD</tag>
     </scm>
 
 </project>
