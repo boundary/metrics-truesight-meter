@@ -34,18 +34,15 @@ public class BoundaryReporterTest {
     @Test
     public void testFilterMetrics() throws InterruptedException, IOException {
 
-
         final Counter c = registry.counter(name(getClass().getSimpleName(), "test-counter"));
         final Histogram h = registry.histogram(name(getClass().getSimpleName(), "test-histogram"));
         final Timer t = registry.timer("test-timer");
         final Meter m = registry.meter("test-meter");
 
-
         Set<MetricExtension> extensions = Sets.newHashSet();
         extensions.add(MetricExtension.Counting.COUNT);
         extensions.add(MetricExtension.Sampling.Median);
         extensions.add(MetricExtension.Metering.OneMinuteRate);
-
 
         Gauge<Double> inverseCounter = new RatioGauge() {
             @Override
@@ -77,24 +74,21 @@ public class BoundaryReporterTest {
                         h.update(i);
                         m.mark();
                     }
-
                     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
                 }
             }
         });
 
-
         await().atMost(15, TimeUnit.SECONDS).until(() -> client.getCaptured().size(), is(10));
 
-
-        for(Iterable<Measure> measures : client.getCaptured()) {
+        for (Iterable<Measure> measures : client.getCaptured()) {
             // 1x gauge
             // 4x counter (timer,meter,histogram and counter)
             // 2x mean (timer, meter)
             // 2x median (timer, histogram)
             assertThat(Iterables.size(measures), is(9));
 
-            for(Measure measure: measures) {
+            for (Measure measure : measures) {
                 assertTrue(measure.name().startsWith(prefix));
             }
         }
@@ -102,5 +96,4 @@ public class BoundaryReporterTest {
         reporter.close();
         assertThat(client.isClosed(), is(true));
     }
-
 }

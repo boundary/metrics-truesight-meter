@@ -29,6 +29,7 @@ class TestCapturingClient implements BoundaryMeterClient {
     public void close() throws IOException {
         closed.compareAndSet(false, true);
     }
+
     boolean isClosed() {
         return closed.get();
     }
@@ -89,8 +90,7 @@ class TestCapturingClient implements BoundaryMeterClient {
         return null;
     }
 
-    public List<Iterable<Measure>> getCaptured () {
+    public List<Iterable<Measure>> getCaptured() {
         return captured;
     }
-
 }

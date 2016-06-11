@@ -14,21 +14,16 @@ public class NameFactoryTest {
 
     private MetricExtension ext = MetricExtension.Counting.COUNT;
 
-
     @Test
     public void testPrefix() throws Exception {
-
         NameFactory nf = new NameFactory(prefix, ImmutableList.of());
         assertThat(nf.name(name), is(prefix + "." + name));
-
     }
 
     @Test
     public void testExtension() throws Exception {
-
         NameFactory nf = new NameFactory(prefix, ImmutableList.of());
         assertThat(nf.name(name, ext), is(prefix + "." + name + "." + ext.getName()));
-
     }
 
     @Test
@@ -43,6 +38,5 @@ public class NameFactoryTest {
         assertThat(nf.name(name2, ext), is(prefix + "." + "extra.widget" + "." + ext.getName()));
         assertThat(nf.name(notMasked, ext), is(prefix + "." + notMasked + "." + ext.getName()));
         assertThat(nf.name(trailing, ext), is(prefix + "." + "should.be.masked" + "." + ext.getName()));
-
     }
 }

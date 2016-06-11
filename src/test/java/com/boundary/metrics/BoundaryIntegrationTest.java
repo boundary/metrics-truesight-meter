@@ -52,12 +52,11 @@ public class BoundaryIntegrationTest {
         reporter.start(1, TimeUnit.SECONDS);
 
         for (int i = 0; i < 10; i++) {
-            try(Timer.Context ignored = t.time()) {
+            try (Timer.Context ignored = t.time()) {
                 c.inc();
                 h.update(i);
                 m.mark();
             }
-
             Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
         }
 

@@ -22,11 +22,11 @@ public class SamplingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Samp
         this.nameFactory = nameFactory;
 
         ImmutableSet.Builder<Sampling> samplingExtensionBuilder = ImmutableSet.builder();
-        for (MetricExtension ext: extensions) {
-            if (ext instanceof Sampling) {
-                samplingExtensionBuilder.add((Sampling) ext);
-            }
-        }
+        extensions.stream()
+                .filter(ext -> ext instanceof Sampling)
+                .forEach(ext -> {
+                    samplingExtensionBuilder.add((Sampling) ext);
+                });
         this.extensions = samplingExtensionBuilder.build();
         this.includeAny = !extensions.isEmpty();
     }
@@ -43,6 +43,5 @@ public class SamplingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Samp
         extensions.forEach(ext -> {
             list.add(Measure.of(nameFactory.name(name, ext), converter.convert(ext.getValue(sn))));
         });
-
     }
 }

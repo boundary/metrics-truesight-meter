@@ -16,7 +16,7 @@ public class CountingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Coun
         this.nameFactory = nameFactory;
 
         boolean includeCount = false;
-        for(MetricExtension extension: extensions) {
+        for (MetricExtension extension : extensions) {
             if (extension instanceof MetricExtension.Counting) {
                 includeCount = true;
             }
@@ -26,7 +26,6 @@ public class CountingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Coun
 
     @Override
     public void filter(String name, com.codahale.metrics.Counting counting, Fn.RateConverter ignored, List<Measure> list) {
-
         if (includeCount) {
             list.add(Measure.of(nameFactory.name(name, MetricExtension.Counting.COUNT), counting.getCount()));
         }

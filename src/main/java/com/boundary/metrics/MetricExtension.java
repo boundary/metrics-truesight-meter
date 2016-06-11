@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 
 public interface MetricExtension {
 
-    public static ImmutableSet<MetricExtension> all() {
+    static ImmutableSet<MetricExtension> all() {
         ImmutableSet.Builder<MetricExtension> b = ImmutableSet.builder();
         b.add(Metering.values());
         b.add(Sampling.values());
@@ -16,10 +16,10 @@ public interface MetricExtension {
 
     }
 
-    public static ImmutableSet<MetricExtension> ALL = all();
+    ImmutableSet<MetricExtension> ALL = all();
 
     @JsonCreator
-    public static MetricExtension fromString(String id) {
+    static MetricExtension fromString(String id) {
 
         for (MetricExtension ext : all()) {
             if (id.equalsIgnoreCase(ext.getName())) {

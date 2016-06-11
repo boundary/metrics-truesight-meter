@@ -21,7 +21,6 @@ public class MeteredExtFilter implements Fn.ExtFilter<Metered> {
     public MeteredExtFilter(Set<MetricExtension> extensions, NameFactory nameFactory) {
         this.nameFactory = nameFactory;
 
-
         ImmutableSet.Builder<Metering> meteredExtensions = ImmutableSet.builder();
 
         extensions
@@ -30,16 +29,12 @@ public class MeteredExtFilter implements Fn.ExtFilter<Metered> {
                 .forEach(ext -> meteredExtensions.add((Metering) ext));
 
         this.extensions = meteredExtensions.build();
-
     }
 
     @Override
     public void filter(String name, Metered metered, Fn.RateConverter converter, List<Measure> list) {
-
         extensions.forEach(ext -> {
             list.add(Measure.of(nameFactory.name(name, ext), converter.convert(ext.getValue(metered))));
         });
-
     }
-
 }

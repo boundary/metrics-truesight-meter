@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Background reporter that sends metrics to a Boundary Meter
  */
-public class BoundaryReporter extends ScheduledReporter{
+public class BoundaryReporter extends ScheduledReporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BoundaryReporter.class);
 
@@ -75,7 +75,7 @@ public class BoundaryReporter extends ScheduledReporter{
     }
 
     private void addTimers(SortedMap<String, Timer> timers, List<Measure> measures) {
-        for (Map.Entry<String, Timer> entry: timers.entrySet()) {
+        for (Map.Entry<String, Timer> entry : timers.entrySet()) {
             counting.filter(entry.getKey(), entry.getValue(), noConversion, measures);
             sampling.filter(entry.getKey(), entry.getValue(), convertDuration, measures);
             metered.filter(entry.getKey(), entry.getValue(), convertRate, measures);
@@ -98,7 +98,7 @@ public class BoundaryReporter extends ScheduledReporter{
     }
 
     private void addGauges(SortedMap<String, Gauge> gauges, List<Measure> measures) {
-        for (Map.Entry<String, Gauge> entry: gauges.entrySet()) {
+        for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
             Object val = entry.getValue().getValue();
             if (val instanceof Number) {
                 Double vn = ((Number) val).doubleValue();
@@ -110,7 +110,7 @@ public class BoundaryReporter extends ScheduledReporter{
     }
 
     private void addCounters(SortedMap<String, Counter> counters, List<Measure> measures) {
-        for (Map.Entry<String, Counter> entry: counters.entrySet()) {
+        for (Map.Entry<String, Counter> entry : counters.entrySet()) {
             counting.filter(entry.getKey(), entry.getValue(), noConversion, measures);
         }
     }
