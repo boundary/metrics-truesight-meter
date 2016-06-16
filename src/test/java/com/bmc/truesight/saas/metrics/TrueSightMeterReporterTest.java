@@ -1,6 +1,6 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
-import com.boundary.meter.client.model.Measure;
+import com.bmc.truesight.saas.meter.client.model.Measure;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -25,7 +25,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class BoundaryReporterTest {
+public class TrueSightMeterReporterTest {
 
     private TestCapturingClient client = new TestCapturingClient();
     private MetricRegistry registry = new MetricRegistry();
@@ -53,7 +53,7 @@ public class BoundaryReporterTest {
         registry.register("test-gauge", inverseCounter);
 
         String prefix = "test";
-        BoundaryReporter reporter = BoundaryReporter.builder()
+        TrueSightMeterReporter reporter = TrueSightMeterReporter.builder()
                 .setDurationUnit(TimeUnit.SECONDS)
                 .setRateUnit(TimeUnit.SECONDS)
                 .setClient(client)

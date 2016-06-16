@@ -1,4 +1,4 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;

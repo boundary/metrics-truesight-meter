@@ -1,13 +1,14 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
 
-import com.boundary.meter.client.BoundaryMeterClient;
-import com.boundary.meter.client.model.Measure;
-import com.boundary.meter.client.rpc.BoundaryRpcClient;
-import com.boundary.meter.client.rpc.BoundaryRpcClientConfig;
-import com.boundary.metrics.filter.CountingExtFilter;
-import com.boundary.metrics.filter.MeteredExtFilter;
-import com.boundary.metrics.filter.SamplingExtFilter;
+import com.bmc.truesight.saas.meter.client.rpc.TruesightRpcClient;
+import com.bmc.truesight.saas.metrics.filter.CountingExtFilter;
+import com.bmc.truesight.saas.metrics.filter.MeteredExtFilter;
+import com.bmc.truesight.saas.meter.client.TruesightMeterClient;
+import com.bmc.truesight.saas.meter.client.model.Measure;
+import com.bmc.truesight.saas.meter.client.rpc.TruesightMeterRpcClientConfig;
+import com.bmc.truesight.saas.meter.client.rpc.TruesightMeterRpcClientConfig;
+import com.bmc.truesight.saas.metrics.filter.SamplingExtFilter;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -31,21 +32,21 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Background reporter that sends metrics to a Boundary Meter
+ * Background reporter that sends metrics to a Truesight Meter
  */
-public class BoundaryReporter extends ScheduledReporter {
+public class TrueSightMeterReporter extends ScheduledReporter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BoundaryReporter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrueSightMeterReporter.class);
 
     private final SamplingExtFilter sampling;
     private final CountingExtFilter counting;
     private final MeteredExtFilter metered;
-    private final BoundaryMeterClient client;
+    private final TruesightMeterClient client;
     private final NameFactory nameFactory;
 
 
-    protected BoundaryReporter(Builder builder) {
-        super(builder.registry, "boundary-reporter", builder.filter, builder.rateUnit, builder.durationUnit);
+    protected TrueSightMeterReporter(Builder builder) {
+        super(builder.registry, "truesight-meter-reporter", builder.filter, builder.rateUnit, builder.durationUnit);
 
         this.nameFactory = new NameFactory(builder.prefix, builder.masks);
 
@@ -121,7 +122,7 @@ public class BoundaryReporter extends ScheduledReporter {
         try {
             client.close();
         } catch (Exception e) {
-            LOGGER.error("Error closing boundary client", e);
+            LOGGER.error("Error closing Truesight meter client", e);
         }
     }
 
@@ -138,7 +139,7 @@ public class BoundaryReporter extends ScheduledReporter {
         private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
         private HostAndPort meter = HostAndPort.fromParts("localhost", 9192);
 
-        private BoundaryMeterClient client;
+        private TruesightMeterClient client;
         private String prefix = "";
         private Set<MetricExtension> extensions = MetricExtension.ALL;
         private List<String> masks = ImmutableList.of();
@@ -184,12 +185,12 @@ public class BoundaryReporter extends ScheduledReporter {
             return this;
         }
 
-        public Builder setClient(BoundaryMeterClient client) {
+        public Builder setClient(TruesightMeterClient client) {
             this.client = client;
             return this;
         }
 
-        public BoundaryReporter build() {
+        public TrueSightMeterReporter build() {
 
             checkNotNull(registry);
             checkNotNull(filter);
@@ -200,19 +201,19 @@ public class BoundaryReporter extends ScheduledReporter {
             checkNotNull(extensions);
 
             if (client == null) {
-                BoundaryRpcClientConfig config = new BoundaryRpcClientConfig();
+                TruesightMeterRpcClientConfig config = new TruesightMeterRpcClientConfig();
                 config.setMeter(meter);
-                BoundaryRpcClient _client = null;
+                TruesightRpcClient _client = null;
                 try {
-                    _client = new BoundaryRpcClient(config);
+                    _client = new TruesightRpcClient(config);
                     _client.connect();
                 } catch (Exception e) {
-                    LOGGER.error("Unable to connect to boundary meter at " + meter.toString(), e);
+                    LOGGER.error("Unable to connect to Truesight meter at " + meter.toString(), e);
                 }
                 client = _client;
             }
 
-            return new BoundaryReporter(this);
+            return new TrueSightMeterReporter(this);
         }
 
     }
