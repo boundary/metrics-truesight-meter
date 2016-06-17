@@ -1,4 +1,4 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
 import com.codahale.metrics.Metered;
 import com.codahale.metrics.Snapshot;

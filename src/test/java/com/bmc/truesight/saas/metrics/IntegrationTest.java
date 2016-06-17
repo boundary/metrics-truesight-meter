@@ -1,4 +1,4 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
@@ -15,15 +15,15 @@ import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
-public class BoundaryIntegrationTest {
+public class IntegrationTest {
 
 
     public static void main(String[] args) throws Exception {
 
         MetricRegistry registry = new MetricRegistry();
 
-        final Counter c = registry.counter(name(BoundaryIntegrationTest.class.getSimpleName(), "a-counter"));
-        final Histogram h = registry.histogram(name(BoundaryIntegrationTest.class.getSimpleName(), "a-histogram"));
+        final Counter c = registry.counter(name(IntegrationTest.class.getSimpleName(), "a-counter"));
+        final Histogram h = registry.histogram(name(IntegrationTest.class.getSimpleName(), "a-histogram"));
         final Timer t = registry.timer("timer");
 
         final Meter m = registry.meter("meter");
@@ -41,7 +41,7 @@ public class BoundaryIntegrationTest {
                 , MetricExtension.Metering.OneMinuteRate
         );
 
-        BoundaryReporter reporter = BoundaryReporter.builder()
+        TrueSightMeterReporter reporter = TrueSightMeterReporter.builder()
                 .setDurationUnit(TimeUnit.SECONDS)
                 .setRateUnit(TimeUnit.SECONDS)
                 .setPrefix("test")

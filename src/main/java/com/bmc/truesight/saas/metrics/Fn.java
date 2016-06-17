@@ -1,6 +1,6 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
-import com.boundary.meter.client.model.Measure;
+import com.bmc.truesight.saas.meter.client.model.Measure;
 
 import java.util.List;
 

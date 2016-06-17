@@ -1,19 +1,19 @@
-package com.boundary.metrics;
+package com.bmc.truesight.saas.metrics;
 
-import com.boundary.meter.client.BoundaryMeterClient;
-import com.boundary.meter.client.command.GetProcessInfo;
-import com.boundary.meter.client.command.GetProcessTopK;
-import com.boundary.meter.client.model.Event;
-import com.boundary.meter.client.model.Measure;
-import com.boundary.meter.client.response.DebugResponse;
-import com.boundary.meter.client.response.DiscoveryResponse;
-import com.boundary.meter.client.response.GetProcessInfoResponse;
-import com.boundary.meter.client.response.GetProcessTopKResponse;
-import com.boundary.meter.client.response.GetServiceListenersResponse;
-import com.boundary.meter.client.response.GetSystemInfoResponse;
-import com.boundary.meter.client.response.ImmutableVoidResponse;
-import com.boundary.meter.client.response.QueryMetricResponse;
-import com.boundary.meter.client.response.VoidResponse;
+import com.bmc.truesight.saas.meter.client.TruesightMeterClient;
+import com.bmc.truesight.saas.meter.client.command.GetProcessInfo;
+import com.bmc.truesight.saas.meter.client.command.GetProcessTopK;
+import com.bmc.truesight.saas.meter.client.model.Event;
+import com.bmc.truesight.saas.meter.client.model.Measure;
+import com.bmc.truesight.saas.meter.client.response.DebugResponse;
+import com.bmc.truesight.saas.meter.client.response.DiscoveryResponse;
+import com.bmc.truesight.saas.meter.client.response.GetProcessInfoResponse;
+import com.bmc.truesight.saas.meter.client.response.GetProcessTopKResponse;
+import com.bmc.truesight.saas.meter.client.response.GetServiceListenersResponse;
+import com.bmc.truesight.saas.meter.client.response.GetSystemInfoResponse;
+import com.bmc.truesight.saas.meter.client.response.ImmutableVoidResponse;
+import com.bmc.truesight.saas.meter.client.response.QueryMetricResponse;
+import com.bmc.truesight.saas.meter.client.response.VoidResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class TestCapturingClient implements BoundaryMeterClient {
+class TestCapturingClient implements TruesightMeterClient {
     CopyOnWriteArrayList<Iterable<Measure>> captured = new CopyOnWriteArrayList<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
 

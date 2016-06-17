@@ -1,32 +1,33 @@
-package com.boundary.metrics.filter;
+package com.bmc.truesight.saas.metrics.filter;
 
-import com.boundary.meter.client.model.Measure;
-import com.boundary.metrics.Fn;
-import com.boundary.metrics.MetricExtension;
-import com.boundary.metrics.NameFactory;
+import com.bmc.truesight.saas.metrics.Fn;
+import com.bmc.truesight.saas.metrics.MetricExtension;
+import com.bmc.truesight.saas.metrics.NameFactory;
+import com.bmc.truesight.saas.meter.client.model.Measure;
+import com.codahale.metrics.Sampling;
 import com.codahale.metrics.Snapshot;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.boundary.metrics.MetricExtension.Sampling.*;
+public class SamplingExtFilter implements Fn.ExtFilter<Sampling> {
 
-public class SamplingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Sampling> {
-
-    private final ImmutableSet<Sampling> extensions;
+    private final ImmutableSet<MetricExtension.Sampling> extensions;
     private final NameFactory nameFactory;
     private final boolean includeAny;
 
     public SamplingExtFilter(Set<MetricExtension> extensions, NameFactory nameFactory) {
         this.nameFactory = nameFactory;
 
-        ImmutableSet.Builder<Sampling> samplingExtensionBuilder = ImmutableSet.builder();
-        extensions.stream()
-                .filter(ext -> ext instanceof Sampling)
+        ImmutableSet.Builder<MetricExtension.Sampling> samplingExtensionBuilder = ImmutableSet.builder();
+        extensions
+                .stream()
+                .filter(ext -> ext instanceof MetricExtension.Sampling)
                 .forEach(ext -> {
-                    samplingExtensionBuilder.add((Sampling) ext);
+                    samplingExtensionBuilder.add((MetricExtension.Sampling) ext);
                 });
+
         this.extensions = samplingExtensionBuilder.build();
         this.includeAny = !extensions.isEmpty();
     }

@@ -1,14 +1,15 @@
-package com.boundary.metrics.filter;
+package com.bmc.truesight.saas.metrics.filter;
 
-import com.boundary.meter.client.model.Measure;
-import com.boundary.metrics.Fn;
-import com.boundary.metrics.MetricExtension;
-import com.boundary.metrics.NameFactory;
+import com.bmc.truesight.saas.metrics.Fn;
+import com.bmc.truesight.saas.metrics.NameFactory;
+import com.bmc.truesight.saas.meter.client.model.Measure;
+import com.bmc.truesight.saas.metrics.MetricExtension;
+import com.codahale.metrics.Counting;
 
 import java.util.List;
 import java.util.Set;
 
-public class CountingExtFilter implements Fn.ExtFilter<com.codahale.metrics.Counting> {
+public class CountingExtFilter implements Fn.ExtFilter<Counting> {
     private final boolean includeCount;
     private final NameFactory nameFactory;
 

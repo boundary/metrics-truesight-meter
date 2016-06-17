@@ -1,32 +1,30 @@
-package com.boundary.metrics.filter;
+package com.bmc.truesight.saas.metrics.filter;
 
-import com.boundary.meter.client.model.Measure;
-import com.boundary.metrics.Fn;
-import com.boundary.metrics.MetricExtension;
-import com.boundary.metrics.NameFactory;
+import com.bmc.truesight.saas.metrics.Fn;
+import com.bmc.truesight.saas.metrics.MetricExtension;
+import com.bmc.truesight.saas.metrics.NameFactory;
+import com.bmc.truesight.saas.meter.client.model.Measure;
 import com.codahale.metrics.Metered;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.boundary.metrics.MetricExtension.Metering.*;
-
 
 public class MeteredExtFilter implements Fn.ExtFilter<Metered> {
 
-    private final ImmutableSet<Metering> extensions;
+    private final ImmutableSet<MetricExtension.Metering> extensions;
     private final NameFactory nameFactory;
 
     public MeteredExtFilter(Set<MetricExtension> extensions, NameFactory nameFactory) {
         this.nameFactory = nameFactory;
 
-        ImmutableSet.Builder<Metering> meteredExtensions = ImmutableSet.builder();
+        ImmutableSet.Builder<MetricExtension.Metering> meteredExtensions = ImmutableSet.builder();
 
         extensions
                 .stream()
-                .filter(ext -> ext instanceof Metering)
-                .forEach(ext -> meteredExtensions.add((Metering) ext));
+                .filter(ext -> ext instanceof MetricExtension.Metering)
+                .forEach(ext -> meteredExtensions.add((MetricExtension.Metering) ext));
 
         this.extensions = meteredExtensions.build();
     }

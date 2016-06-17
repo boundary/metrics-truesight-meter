@@ -1,4 +1,4 @@
-# metrics-boundary
+# metrics-truesight-meter
 
 A library for reporting dropwizard metrics to TrueSight Pulse.
 
@@ -7,8 +7,8 @@ A library for reporting dropwizard metrics to TrueSight Pulse.
 
 ```xml
     <dependency>
-        <groupId>com.boundary</groupId>
-        <artifactId>metrics-boundary</artifactId>
+        <groupId>com.bmc.truesight.saas</groupId>
+        <artifactId>metrics-truesight-meter</artifactId>
         <version>0.7</version>
     </dependency>
 ```
@@ -24,7 +24,7 @@ A library for reporting dropwizard metrics to TrueSight Pulse.
         // extensions are highly recommended to limit the amount data points reported
         Set<MetricExtension> extensions = ImmutableSet.of(MetricExtension.Counting.COUNT, MetricExtension.Metering.OneMinuteRate);
 
-        BoundaryReporter.Builder builder = BoundaryReporter.builder()
+        TrueSighMeterReporter.Builder builder = TrueSighMeterReporter.builder()
                 .setDurationUnit(TimeUnit.MILLISECONDS)
                 .setFilter(filter)
                 .setRateUnit(TimeUnit.SECONDS)
@@ -32,7 +32,7 @@ A library for reporting dropwizard metrics to TrueSight Pulse.
                 .setExtensions(extensions)
                 .setPrefix("my_app_name");
 
-        BoundaryReporter reporter = builder.build();
+        TrueSighMeterReporter reporter = builder.build();
         reporter.start(1, TimeUnit.SECONDS);
 ```
 
