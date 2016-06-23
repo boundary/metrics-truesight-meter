@@ -1,6 +1,6 @@
 # metrics-truesight-meter
 
-A library for reporting dropwizard metrics to TrueSight Pulse.
+A library for reporting dropwizard metrics to the TrueSight Meter.
 
 # Installation
 ## Maven
