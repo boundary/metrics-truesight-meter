@@ -5,6 +5,26 @@
     <groupId>com.bmc.truesight.saas</groupId>
     <artifactId>metrics-truesight-meter</artifactId>
     <version>0.8-SNAPSHOT</version>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>A library for reporting dropwizard metrics to the TrueSight meter.</description>
+    <url>https://github.com/boundary/metrics-truesight-meter</url>
+
+    <developers>
+        <developer>
+            <id>gjesse</id>
+            <name>Jesse Hodges</name>
+            <email>jesse_hodges@bmc.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.1.2</metrics.version>
@@ -122,36 +142,63 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>ts-saas</id>
-            <name>TrueSight Saas Releases</name>
-            <url>http://onebuild.bmc.com:8081/nexus/content/repositories/ts-saas-release</url>
-        </repository>
-        <repository>
-            <id>thirdparty</id>
-            <url>http://onebuild.bmc.com:8081/nexus/content/repositories/thirdparty</url>
-        </repository>
-    </repositories>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ts-saas</id>
-            <name>TrueSight Saas Snapshots</name>
-            <url>http://onebuild.bmc.com:8081/nexus/content/repositories/ts-saas-snapshot</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>ts-saas</id>
-            <name>TrueSight Saas Releases</name>
-            <url>http://onebuild.bmc.com:8081/nexus/content/repositories/ts-saas-release</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
     <scm>
-        <connection>scm:git:ssh://git@github.bmc.com/ts-saas/metrics-boundary.git</connection>
+        <url>https://github.com/boundary/metrics-truesight-meter</url>
+        <connection>scm:git:ssh://git@github.com/boundary/metrics-truesight-meter.git</connection>
+        <developerConnection>scm:git:git@github.com:boundary/metrics-truesight-meter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
+    <profiles>
+        <profile>
+            <id>gpg-signing</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
