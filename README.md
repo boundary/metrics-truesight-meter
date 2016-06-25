@@ -9,7 +9,7 @@ A library for reporting dropwizard metrics to the TrueSight Meter.
     <dependency>
         <groupId>com.bmc.truesight.saas</groupId>
         <artifactId>metrics-truesight-meter</artifactId>
-        <version>0.7</version>
+        <version>0.8</version>
     </dependency>
 ```
 
