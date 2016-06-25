@@ -28,7 +28,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.1.2</metrics.version>
-        <meter.client.version>0.8-SNAPSHOT</meter.client.version>
+        <meter.client.version>0.8</meter.client.version>
     </properties>
 
     <dependencies>
