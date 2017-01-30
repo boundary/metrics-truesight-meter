@@ -27,8 +27,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <meter.client.version>0.10</meter.client.version>
-        <dw.version>1.0.0</dw.version>
+        <meter.client.version>0.11</meter.client.version>
+        <dw.version>1.0.5</dw.version>
     </properties>
 
     <dependencyManagement>
