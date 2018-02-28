@@ -48,7 +48,7 @@ public class TrueSightMeterReporter extends ScheduledReporter {
     protected TrueSightMeterReporter(Builder builder) {
         super(builder.registry, "truesight-meter-reporter", builder.filter, builder.rateUnit, builder.durationUnit);
 
-        this.nameFactory = new NameFactory(builder.prefix, builder.masks);
+        this.nameFactory = new NameFactory(builder.prefix, builder.masks, builder.source);
 
         this.sampling = new SamplingExtFilter(builder.extensions, nameFactory);
         this.counting = new CountingExtFilter(builder.extensions, nameFactory);
@@ -104,7 +104,7 @@ public class TrueSightMeterReporter extends ScheduledReporter {
             if (val instanceof Number) {
                 Double vn = ((Number) val).doubleValue();
                 if (!(Double.isInfinite(vn) || Double.isNaN(vn))) {
-                    measures.add(Measure.of(nameFactory.name(entry.getKey()), vn));
+                    measures.add(Measure.of(nameFactory.name(entry.getKey()), vn, nameFactory.source()));
                 }
             }
         }
@@ -141,6 +141,7 @@ public class TrueSightMeterReporter extends ScheduledReporter {
 
         private TruesightMeterClient client;
         private String prefix = "";
+        private String source = "";
         private Set<MetricExtension> extensions = MetricExtension.ALL;
         private List<String> masks = ImmutableList.of();
 
@@ -175,6 +176,11 @@ public class TrueSightMeterReporter extends ScheduledReporter {
             return this;
         }
 
+        public Builder setSource(String source) {
+            this.source = source;
+            return this;
+        }
+
         public Builder setExtensions(Set<MetricExtension> extensions) {
             this.extensions = extensions;
             return this;
@@ -198,6 +204,7 @@ public class TrueSightMeterReporter extends ScheduledReporter {
             checkNotNull(durationUnit);
             checkNotNull(meter);
             checkNotNull(prefix);
+            checkNotNull(source);
             checkNotNull(extensions);
 
             if (client == null) {

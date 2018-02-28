@@ -32,7 +32,9 @@ public class MeteredExtFilter implements Fn.ExtFilter<Metered> {
     @Override
     public void filter(String name, Metered metered, Fn.RateConverter converter, List<Measure> list) {
         extensions.forEach(ext -> {
-            list.add(Measure.of(nameFactory.name(name, ext), converter.convert(ext.getValue(metered))));
+            list.add(Measure.of(nameFactory.name(name, ext),
+                                converter.convert(ext.getValue(metered)),
+                                nameFactory.source()));
         });
     }
 }
