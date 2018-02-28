@@ -19,6 +19,11 @@ public class IntegrationTest {
 
 
     public static void main(String[] args) throws Exception {
+        withoutSource();
+        withSource();
+    }
+
+    private static void withoutSource() {
 
         MetricRegistry registry = new MetricRegistry();
 
@@ -62,4 +67,48 @@ public class IntegrationTest {
 
     }
 
+    private static void withSource() {
+
+        MetricRegistry registry = new MetricRegistry();
+
+        final Counter c = registry.counter(name(IntegrationTest.class.getSimpleName(), "a-counter"));
+        final Histogram h = registry.histogram(name(IntegrationTest.class.getSimpleName(), "a-histogram"));
+        final Timer t = registry.timer("timer");
+
+        final Meter m = registry.meter("meter");
+
+        Gauge<Double> inverseCounter = new RatioGauge() {
+            @Override
+            protected Ratio getRatio() {
+                return Ratio.of(1.0, c.getCount());
+            }
+        };
+        registry.register("test_gauge", inverseCounter);
+
+        Set<MetricExtension> extensions = ImmutableSet.of(
+                MetricExtension.Counting.COUNT
+                , MetricExtension.Metering.OneMinuteRate
+        );
+
+        TrueSightMeterReporter reporter = TrueSightMeterReporter.builder()
+                                                                .setDurationUnit(TimeUnit.SECONDS)
+                                                                .setRateUnit(TimeUnit.SECONDS)
+                                                                .setPrefix("test")
+                                                                .setSource("Vulcan")
+                                                                .setExtensions(extensions)
+                                                                .setRegistry(registry)
+                                                                .build();
+
+        reporter.start(1, TimeUnit.SECONDS);
+
+        for (int i = 0; i < 10; i++) {
+            try (Timer.Context ignored = t.time()) {
+                c.inc();
+                h.update(i);
+                m.mark();
+            }
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        }
+
+    }
 }
