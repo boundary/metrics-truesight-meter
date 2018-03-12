@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class NameFactoryTest {
@@ -38,5 +39,21 @@ public class NameFactoryTest {
         assertThat(nf.name(name2, ext), is(prefix + "." + "extra.widget" + "." + ext.getName()));
         assertThat(nf.name(notMasked, ext), is(prefix + "." + notMasked + "." + ext.getName()));
         assertThat(nf.name(trailing, ext), is(prefix + "." + "should.be.masked" + "." + ext.getName()));
+    }
+
+    @Test
+    public void testSource() {
+        NameFactory nf = new NameFactory(prefix, ImmutableList.of(), "Vulcan");
+        assertThat(nf.source().getClass().getSimpleName(), is("Optional"));
+        assertThat(nf.source().get(), is("Vulcan"));
+
+    }
+
+    @Test
+    public void testNoSource() {
+        NameFactory nf = new NameFactory(prefix, ImmutableList.of());
+        assertThat(nf.source().getClass().getSimpleName(), is("Optional"));
+        assertEquals(nf.source().orElse(null), null);
+
     }
 }
